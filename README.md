@@ -17,10 +17,11 @@ git checkout {your_name}
 ### Merge and push project
 
 ```
-# After commit
 git fetch --all
 git merge origin/master
 # Fix conflict (if have any), if you don't know how to fix it, contact dada
+git add {your_files}
+git commit
 git push origin {your_name}
 ```
 1. Go to [github page](https://github.com/dada8397/SchoolShop).
@@ -30,3 +31,8 @@ git push origin {your_name}
 3. Select Assignee to dada8397.
 4. Press "Create pull request".
 5. Contact dada and wait for merge.
+
+### Test project
+
+1. You can either `git merge origin/master` on your branch to test
+2. Or you can checkout to master and `git pull origin master` to test
