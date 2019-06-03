@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">SchoolShop</string>
+    <string name="label_activity_list">商品總覽</string>
+    <string name="label_activity_create">刊登商品</string>
+    <string name="label_activity_detail">商品詳細</string>
+    <string name="label_activity_chat">聊天</string>
 </resources>

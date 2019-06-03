@@ -16,6 +16,18 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:name="com.example.schoolshop.ListActivity"
+            android:label="@string/label_activity_list" />
+        <activity
+            android:name="com.example.schoolshop.CreateActivity"
+            android:label="@string/label_activity_create" />
+        <activity
+            android:name="com.example.schoolshop.DetailActivity"
+            android:label="@string/label_activity_detail" />
+        <activity
+            android:name="com.example.schoolshop.ChatActivity"
+            android:label="@string/label_activity_chat" />
     </application>
 
 </manifest>
