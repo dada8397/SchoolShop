@@ -35,19 +35,16 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import static android.provider.AlarmClock.EXTRA_MESSAGE;
+
 public class CreateActivity extends AppCompatActivity {
 
-    //private LinearLayout LL;
     private ImageView imageView1;
     private ImageView imageView2;
-    private OkHttpClient httpClient;
-    //private OkHttpClient httpClient;
-    //private Button submit;
-    //private int REQUEST_CODE = 1;
-    //public static final int GET_FROM_GALLERY = 3;
+    private Button submit;
 
     public String postUrl= "http://merry.ee.ncku.edu.tw:10000/createStuff/";
-    public String postBody="{\"name\": \"500G SSD\", \"owner\": \"1\", \"description\": \"9成新，用過一個月，附發票\", \"img_url\": {\"1\": \"https://i.imgur.com/3JIbb5O.jpg\", \"2\": \"https://i.imgur.com/OfGYgqk.png\", \"price\": \"1000\"}";
+    public String postBody="{\"name\": \"500G SSD\", \"owner\": \"1\", \"description\": \"9成新，用過一個月，附發票\", \"img_url\": {\"1\": \"https://i.imgur.com/3JIbb5O.jpg\", \"2\": \"https://i.imgur.com/OfGYgqk.png\"}, \"price\": \"1000\"}";
 
     public static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
 
@@ -56,19 +53,11 @@ public class CreateActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create);
 
-        try {
-            postRequest(postUrl,postBody);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
 
         //初始化
-        //LL =(LinearLayout)this.findViewById(R.id.LL);
         imageView1 = (ImageView) findViewById(R.id.photo1_imageView);
         imageView2 = (ImageView) findViewById(R.id.photo2_imageView);
-        //submit = (Button) findViewById(R.id.submit_button);
-
-
+        submit = (Button) findViewById(R.id.submit_button);
 
 
         //擷取照片按鈕監聽器
@@ -103,8 +92,20 @@ public class CreateActivity extends AppCompatActivity {
 
         });
 
+        submit.setOnClickListener(new Button.OnClickListener() {
 
-
+            @Override
+            public void onClick(View v) {
+                /*try {
+                    postRequest(postUrl, postBody);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }*/
+                Intent intent = new Intent(CreateActivity.this, DetailActivity.class);
+                intent.putExtra(EXTRA_MESSAGE, postBody);
+                startActivity(intent);
+            }
+        });
     }
 
 
@@ -127,10 +128,12 @@ public class CreateActivity extends AppCompatActivity {
 
             @Override
             public void onResponse(Call call, Response response) throws IOException {
-                Log.d("TAG",response.body().string());
+                Log.d("here", response.body().string());
             }
         });
     }
+
+
 
 
     @Override
