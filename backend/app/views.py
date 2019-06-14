@@ -12,6 +12,7 @@ def createStuff(request):
     body = json.loads(request.body.decode('utf-8'))
     body['status'] = 'selling'
     curr = str(int(time.time()))
+    body['img_url'] = json.dumps(body['img_url'])
     body['created_at'] = curr
     body['updated_at'] = curr
     Stuff.objects.create(**body)
@@ -22,6 +23,8 @@ def getStuffs(request):
     body = json.loads(request.body.decode('utf-8'))
     stuffs = Stuff.objects.filter(owner=body['owner'])
     stuffs = list(stuffs.values())
+    for stuff in stuffs:
+        stuff['img_url'] = json.loads(stuff['img_url'])
     return JsonResponse({'allStuffs': stuffs})
 
 @csrf_exempt
