@@ -29,5 +29,7 @@
             android:name="com.example.schoolshop.ChatActivity"
             android:label="@string/label_activity_chat" />
     </application>
+    <uses-permission android:name="android.permission.INTERNET"/>
+
 
 </manifest>
