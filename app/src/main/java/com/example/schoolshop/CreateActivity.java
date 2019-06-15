@@ -150,11 +150,11 @@ public class CreateActivity extends AppCompatActivity {
 
                 postBody = "{\"name\": \"" + get_item + "\", \"owner\": \"1\", \"description\": \"" + get_description + "\", \"img_url\": {\"1\": \"https://i.imgur.com/3JIbb5O.jpg\", \"2\": \"https://i.imgur.com/OfGYgqk.png\"}, \"price\": \"" + get_price + "\"}";
 
-                /*try {
+                try {
                     postRequest(postUrl, postBody);
                 } catch (IOException e) {
                     e.printStackTrace();
-                }*/
+                }
 
                 Intent intent = new Intent(CreateActivity.this, DetailActivity.class);
                 intent.putExtra("ITEM", postBody);
