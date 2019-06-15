@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MessageAdapter extends BaseAdapter {
+
     List<Message> messages = new ArrayList<Message>();
     Context context;
 
@@ -41,6 +42,7 @@ public class MessageAdapter extends BaseAdapter {
         return i;
     }
 
+    // This is the backbone of the class, it handles the creation of single ListView row (chat bubble)
     @Override
     public View getView(int i, View convertView, ViewGroup viewGroup) {
         MessageViewHolder holder = new MessageViewHolder();
@@ -59,10 +61,12 @@ public class MessageAdapter extends BaseAdapter {
             holder.messageBody = (TextView) convertView.findViewById(R.id.message_body);
             convertView.setTag(holder);
 
-            holder.name.setText(message.getMemberData().getName());
+            //holder.name.setText(message.getMemberData().getName());
+            holder.name.setText("test");
             holder.messageBody.setText(message.getText());
             GradientDrawable drawable = (GradientDrawable) holder.avatar.getBackground();
-            drawable.setColor(Color.parseColor(message.getMemberData().getColor()));
+            //drawable.setColor(Color.parseColor(message.getMemberData().getColor()));
+            drawable.setColor(Color.parseColor("blue"));
         }
 
         return convertView;
