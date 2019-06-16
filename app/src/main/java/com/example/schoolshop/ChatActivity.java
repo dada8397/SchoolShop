@@ -111,13 +111,11 @@ public class ChatActivity extends AppCompatActivity {
 
             @Override
             public void onResponse(Call call, Response response) throws IOException {
-                //Log.d("TAG", response.body().string());
                 String json = response.body().string();
-                Log.e("TAG", json);
+
                 try {
                     JSONObject obj = new JSONObject(json);
                     JSONArray arr = obj.getJSONArray("allMsgs");
-
 
                     for (int i=0; i<arr.length(); i++) {
                         JSONObject all = arr.getJSONObject(i);
@@ -129,13 +127,6 @@ public class ChatActivity extends AppCompatActivity {
                                 messagesView.setSelection(messagesView.getCount()-1);
                             }
                         });
-                        /*
-                        if (all.getString("src").equals("1")) {
-                            Log.e("content", all.getString("content"));
-
-                        } else {
-                            Log.d("content", all.getString("content"));
-                        }*/
                     }
                 } catch (JSONException e) {
                     throw new RuntimeException(e);
