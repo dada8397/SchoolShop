@@ -36,6 +36,8 @@ import okhttp3.Response;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -79,7 +81,7 @@ public class CreateActivity extends AppCompatActivity {
 
 
         //擷取照片按鈕監聽器
-        /*image1.setOnClickListener(new Button.OnClickListener() {
+        image1.setOnClickListener(new Button.OnClickListener() {
             @Override
             public void onClick(View v) {
                 //讀取圖片
@@ -108,19 +110,31 @@ public class CreateActivity extends AppCompatActivity {
             }
 
 
-        });*/
+        });
 
 
 
-        //擷取照片按鈕監聽器
+        /*//擷取照片按鈕監聽器
         image1.setOnClickListener(new Button.OnClickListener() {
-            String url1 = "https://i.imgur.com/3JIbb5O.jpg";
+            String url1 = "i.imgur.com/3JIbb5O.jpg";
 
 
             @Override
             public void onClick(View v) {
-                LoadImageFromWebOperations(url1);
-                image1.setImageDrawable(LoadImageFromWebOperations(url1));
+                //Drawable img = LoadImageFromWebOperations(url1);
+                //image1.setImageDrawable(img);
+                URL url = null;
+                try {
+                    url = new URL(url1);
+                }
+                catch (MalformedURLException e) {}
+                catch (IOException e) {}
+                try {
+                    Bitmap bmp = BitmapFactory.decodeStream(url.openConnection().getInputStream());
+                    image1.setImageBitmap(bmp);
+                }
+                catch (MalformedURLException e) {}
+                catch (IOException e) {}
 
             }
         });
@@ -137,7 +151,7 @@ public class CreateActivity extends AppCompatActivity {
             }
 
 
-        });
+        });*/
 
         submit.setOnClickListener(new Button.OnClickListener() {
 
