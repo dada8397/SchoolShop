@@ -4,4 +4,9 @@
     <string name="label_activity_create">刊登商品</string>
     <string name="label_activity_detail">商品詳細</string>
     <string name="label_activity_chat">聊天</string>
+    <string-array name="users">
+        <item>User1</item>
+        <item>User2</item>
+    </string-array>
+    <string name="button_login">Login</string>
 </resources>
