@@ -2,15 +2,19 @@ package com.example.schoolshop;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.nfc.Tag;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Base64;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,9 +26,14 @@ import android.widget.TextView;
 
 //import com.squareup.picasso.Picasso;
 
+import com.loopj.android.http.AsyncHttpClient;
+import com.loopj.android.http.JsonHttpResponseHandler;
+import com.loopj.android.http.RequestParams;
+
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import cz.msebera.android.httpclient.Header;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.MediaType;
@@ -33,6 +42,7 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 
+import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -56,6 +66,7 @@ public class CreateActivity extends AppCompatActivity {
     private String get_price;
     private String get_description;
     private String userID;
+    private final int REQUEST_PICK_IMAGE = 1;
 
 
     public String postUrl= "http://merry.ee.ncku.edu.tw:10000/createStuff/";
@@ -116,46 +127,6 @@ public class CreateActivity extends AppCompatActivity {
         });
 
 
-
-        /*//擷取照片按鈕監聽器
-        image1.setOnClickListener(new Button.OnClickListener() {
-            String url1 = "i.imgur.com/3JIbb5O.jpg";
-
-
-            @Override
-            public void onClick(View v) {
-                //Drawable img = LoadImageFromWebOperations(url1);
-                //image1.setImageDrawable(img);
-                URL url = null;
-                try {
-                    url = new URL(url1);
-                }
-                catch (MalformedURLException e) {}
-                catch (IOException e) {}
-                try {
-                    Bitmap bmp = BitmapFactory.decodeStream(url.openConnection().getInputStream());
-                    image1.setImageBitmap(bmp);
-                }
-                catch (MalformedURLException e) {}
-                catch (IOException e) {}
-
-            }
-        });
-        image2.setOnClickListener(new Button.OnClickListener() {
-
-            String url2 = "https://i.imgur.com/OfGYgqk.png";
-            @Override
-            public void onClick(View v) {
-                //LoadImageFromWebOperations(url2);
-                //Bitmap bmp = BitmapFactory.decodeStream(url2.openConnection().getInputStream());
-                //image2.setImageDrawable(LoadImageFromWebOperations(url2));
-                image2.setImageDrawable(LoadImageFromWebOperations(url2));
-
-            }
-
-
-        });*/
-
         submit.setOnClickListener(new Button.OnClickListener() {
 
             @Override
@@ -205,21 +176,19 @@ public class CreateActivity extends AppCompatActivity {
         });
     }
 
-    public static Drawable LoadImageFromWebOperations(String url) {
-        try {
-            InputStream is = (InputStream) new URL(url).getContent();
-            Drawable d = Drawable.createFromStream(is, "src name");
-            return d;
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode != RESULT_OK) { return; }
 
-        } catch (Exception e) {
-            return null;
+        switch(requestCode){
+            case REQUEST_PICK_IMAGE:
+                getSelectImage(data); //處理選取圖片的程式 寫在後面
+                break;
         }
     }
 
-
-
-
-    @Override
+    /*@Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         //Log.e("456", "eeeeeeeeeeeee");
         super.onActivityResult(requestCode, resultCode, data);
@@ -242,7 +211,118 @@ public class CreateActivity extends AppCompatActivity {
                 e.printStackTrace();
             }
         }
+    }*/
+
+    //選擇了要插入的圖片後，在onActivityResult會執行這個
+    private void getSelectImage(Intent data){
+        //從 onActivityResult 傳入的data中，取得圖檔路徑
+        Uri selectedImage = data.getData();
+        String[] filePathColumn = { MediaStore.Images.Media.DATA };
+
+        Cursor cursor = getContentResolver().query(selectedImage,
+                filePathColumn, null, null, null);
+        if(cursor==null){ return; }
+        cursor.moveToFirst();
+
+        int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
+        String imagePath = cursor.getString(columnIndex);
+        cursor.close();
+        //Log.d("editor","image:"+imagePath);
+
+        //使用圖檔路徑產生調整過大小的Bitmap
+        Bitmap bitmap = getResizedBitmap(imagePath); //程式寫在後面
+
+        //將 Bitmap 轉為 base64 字串
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, bos);
+        byte[] bitmapData = bos.toByteArray();
+        String imageBase64 = Base64.encodeToString(bitmapData, Base64.DEFAULT);
+        //Log.d("editor",imageBase64);
+
+        //將圖檔上傳至 Imgur，將取得的圖檔網址插入文字輸入框
+        imgurUpload(imageBase64); //程式寫在後面
     }
+
+    private Bitmap getResizedBitmap(String imagePath) {
+        final int MAX_WIDTH = 1024; // 新圖的寬要小於等於這個值
+
+        BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inJustDecodeBounds = true; //只讀取寬度和高度
+        BitmapFactory.decodeFile(imagePath, options);
+        int width = options.outWidth, height = options.outHeight;
+
+        // 求出要縮小的 scale 值，必需是2的次方，ex: 1,2,4,8,16...
+        int scale = 1;
+        while(width > MAX_WIDTH*2){
+            width /= 2;
+            height /= 2;
+            scale *= 2;
+        }
+
+        // 使用 scale 值產生縮小的圖檔
+        BitmapFactory.Options scaledOptions = new BitmapFactory.Options();
+        scaledOptions.inSampleSize = scale;
+        Bitmap scaledBitmap = BitmapFactory.decodeFile(imagePath, scaledOptions);
+
+        float resize = 1; //縮小值 resize 可為任意小數
+        if(width>MAX_WIDTH){
+            resize = ((float) MAX_WIDTH) / width;
+        }
+
+        Matrix matrix = new Matrix(); // 產生縮圖需要的參數 matrix
+        matrix.postScale(resize, resize); // 設定寬與高的縮放比例
+
+        // 產生縮小後的圖
+        return Bitmap.createBitmap(scaledBitmap, 0, 0, width, height, matrix, true);
+    }
+
+    private void imgurUpload(final String image){ //插入圖片
+        String urlString = "https://imgur-apiv3.p.mashape.com/3/image/";
+        String mashapeKey = "3e2d3a6799msh2933e1ccd123cb5p18a23djsn03d073e8c889"; //設定自己的 Mashape Key
+        String clientId = "1035827e94db77b"; //設定自己的 Clinet ID
+        String titleString = ""; //設定圖片的標題
+
+
+        AsyncHttpClient client = new AsyncHttpClient();
+        client.addHeader("X-Mashape-Key", mashapeKey);
+        client.addHeader("Authorization", "Client-ID "+clientId);
+        client.addHeader("Content-Type", "application/x-www-form-urlencoded");
+        RequestParams params = new RequestParams();
+        params.put("title", titleString);
+        params.put("image", image);
+        client.post(urlString, params, new JsonHttpResponseHandler() {
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                if (!response.optBoolean("success") || !response.has("data")) {
+                    Log.d("editor", "response: "+response.toString());
+                    return;
+                }
+                JSONObject data = response.optJSONObject("data");
+                //Log.d("editor","link: "+data.optString("link"));
+                String link = data.optString("link","");
+                int width = data.optInt("width",0);
+                int height = data.optInt("height",0);
+                String bbcode = "[img="+width+"x"+height+"]"+link+"[/img]";
+                //將文字插入輸入框的程式 寫在後面
+            }
+            @Override
+            public void onFailure(int statusCode, Header[] headers, Throwable e, JSONObject error) {
+
+                Log.d("editor","error: "+error.toString());
+                /*if (error.has("data")) {
+                    JSONObject data = error.optJSONObject("data");
+                    AlertDialog dialog = new AlertDialog.Builder(mContext)
+                            .setTitle("Error: " + statusCode + " " + e.getMessage())
+                            .setMessage(data.optString("error",""))
+                            .setPositiveButton("確定", null)
+                            .create();
+                    dialog.show();
+                }*/
+            }
+        });
+    }
+
+
 
 }
 
