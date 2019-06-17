@@ -55,6 +55,7 @@ public class CreateActivity extends AppCompatActivity {
     private String get_item;
     private String get_price;
     private String get_description;
+    private String userID;
 
 
     public String postUrl= "http://merry.ee.ncku.edu.tw:10000/createStuff/";
@@ -67,6 +68,8 @@ public class CreateActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create);
 
+        Intent intent = this.getIntent();
+        userID = intent.getStringExtra("UserID");
 
         //初始化
         image1 = (ImageView) findViewById(R.id.photo1_imageView);
