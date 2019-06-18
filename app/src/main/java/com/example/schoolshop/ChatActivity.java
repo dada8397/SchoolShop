@@ -33,6 +33,7 @@ public class ChatActivity extends AppCompatActivity {
     private MessageAdapter messageAdapter;
     private ListView messagesView;
     private String userID;
+    private String stuffID;
     private final Handler handler = new Handler();
     private int count = 0;
 
@@ -43,6 +44,8 @@ public class ChatActivity extends AppCompatActivity {
 
         Intent intent = this.getIntent();
         userID = intent.getStringExtra("UserID");
+        //stuffID = intent.getStringExtra("StuffID");
+        stuffID = "1";
 
         editText = (EditText) findViewById(R.id.editText);
         messageAdapter = new MessageAdapter(this);
@@ -89,10 +92,13 @@ public class ChatActivity extends AppCompatActivity {
             src = "2";
             dst = "1";
         }
+
+
         String postBody =
                 "{\"src\": \"" + src + "\"," +
                         "\"dst\": \"" + dst + "\"," +
-                        "\"content\": \"" + msg + "\"}";
+                        "\"stuff_id\": \"" + stuffID + "\"," +
+                        "\"content\": \"" + msg + "\"}" ;
 
         try {
             postRequest(postUrl, postBody);
@@ -150,11 +156,14 @@ public class ChatActivity extends AppCompatActivity {
                     for (int i=count; i<arr.length(); i++) {
                         JSONObject all = arr.getJSONObject(i);
                         final Message message = new Message(all.getString("content"), all.getString("src").equals(userID));
+                        final String id = all.getString("stuff_id");
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                messageAdapter.add(message);
-                                messagesView.setSelection(messagesView.getCount()-1);
+                                if (id.equals(stuffID)){
+                                    messageAdapter.add(message);
+                                    messagesView.setSelection(messagesView.getCount()-1);
+                                }
                             }
                         });
                     }
