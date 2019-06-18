@@ -21,13 +21,6 @@
             android:layout_height="wrap_content"
             android:text="@string/label_activity_create"
             android:onClick="createOnClick" />
-
-        <Button
-            android:id="@+id/btn_chat"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/label_activity_chat"
-            android:onClick="chatOnClick" />
     </LinearLayout>
 
     <ListView

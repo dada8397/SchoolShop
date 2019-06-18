@@ -148,10 +148,4 @@ public class ListActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
-    public void chatOnClick(View v) {
-        Intent intent = new Intent(ListActivity.this, ChatActivity.class);
-        intent.putExtra("UserID", userID);
-        startActivity(intent);
-    }
-
 }
