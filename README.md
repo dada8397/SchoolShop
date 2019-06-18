@@ -1,12 +1,15 @@
 # SchoolShop
 
 A final project for AAD course...
+You can download our apk in [here](https://github.com/dada8397/SchoolShop/releases)
 
-## Git Flow
+## Developer guideline
+
+### Git Flow
 
 [Git Flow 教學](https://ihower.tw/blog/archives/5140)
 
-### New branch
+#### New branch
 
 ```
 git pull origin master
@@ -14,7 +17,7 @@ git branch {your_name}
 git checkout {your_name}
 ```
 
-### Merge and push project
+#### Merge and push project
 
 ```
 git fetch --all
@@ -32,7 +35,7 @@ git push origin {your_name}
 4. Press "Create pull request".
 5. Contact dada and wait for merge.
 
-### Test project
+#### Test project
 
 1. You can either `git merge origin/master` on your branch to test
 2. Or you can checkout to master and `git pull origin master` to test
