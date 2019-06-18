@@ -4,6 +4,7 @@ from django.db import models
 class Stuff(models.Model):
     name = models.TextField(blank=True)
     owner = models.TextField(blank=True)
+    buyer = models.TextField(blank=True)    
     description = models.TextField(blank=True)
     img_url = models.TextField(blank=True)
     price = models.TextField(blank=True)
