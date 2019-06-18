@@ -22,6 +22,7 @@ urlpatterns = [
     path('createStuff/', createStuff),
     path('getStuffs/', getStuffs),
     path('delStuff/', delStuff),
+    path('setStuffReject/', setStuffSelling),
     path('setStuffBuying/', setStuffBuying),
     path('setStuffSoldout/', setStuffSoldout),
     path('sendMsg/', sendMsg),

@@ -20,8 +20,8 @@ def createStuff(request):
 
 @csrf_exempt
 def getStuffs(request):
-    body = json.loads(request.body.decode('utf-8'))
-    stuffs = Stuff.objects.filter(owner=body['owner'])
+    # body = json.loads(request.body.decode('utf-8'))
+    stuffs = Stuff.objects.all()
     stuffs = list(stuffs.values())
     for stuff in stuffs:
         stuff['img_url'] = json.loads(stuff['img_url'])
@@ -35,11 +35,20 @@ def delStuff(request):
     return JsonResponse({'msg': 'ok'})
 
 @csrf_exempt
-def setStuffBuying(request):
+def setStuffSelling(request):
     body = json.loads(request.body.decode('utf-8'))
     _id = body['id']
     curr = str(int(time.time()))
-    Stuff.objects.filter(id=_id).update(status='buying', updated_at=curr)
+    Stuff.objects.filter(id=_id).update(status='selling', updated_at=curr)
+    return JsonResponse({'msg': 'ok'})
+
+@csrf_exempt
+def setStuffBuying(request):
+    body = json.loads(request.body.decode('utf-8'))
+    _id = body['id']
+    buyer = body['buyer']
+    curr = str(int(time.time()))
+    Stuff.objects.filter(id=_id).update(buyer=buyer, status='buying', updated_at=curr)
     return JsonResponse({'msg': 'ok'})
 
 @csrf_exempt
