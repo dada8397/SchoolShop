@@ -35,6 +35,14 @@ def delStuff(request):
     return JsonResponse({'msg': 'ok'})
 
 @csrf_exempt
+def setStuffSelling(request):
+    body = json.loads(request.body.decode('utf-8'))
+    _id = body['id']
+    curr = str(int(time.time()))
+    Stuff.objects.filter(id=_id).update(status='selling', updated_at=curr)
+    return JsonResponse({'msg': 'ok'})
+
+@csrf_exempt
 def setStuffBuying(request):
     body = json.loads(request.body.decode('utf-8'))
     _id = body['id']
