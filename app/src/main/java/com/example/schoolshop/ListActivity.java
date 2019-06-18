@@ -50,6 +50,7 @@ public class ListActivity extends AppCompatActivity {
     private int count = 0;
 
     private String userID;
+    private String[] stuffs;
 
     private String responseString;
 
@@ -76,12 +77,15 @@ public class ListActivity extends AppCompatActivity {
             e.printStackTrace();
         }
 
-//        stuffListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-//            @Override
-//            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-//                detailOnClick(view);
-//            }
-//        });
+        stuffListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Intent intent = new Intent(ListActivity.this, DetailActivity.class);
+                intent.putExtra("UserID", userID);
+                intent.putExtra("item", stuffs[position]);
+                startActivity(intent);
+            }
+        });
     }
 
     void postRequest(String postUrl,String postBody) throws IOException {
@@ -109,7 +113,10 @@ public class ListActivity extends AppCompatActivity {
                     JSONObject obj = new JSONObject(json);
                     JSONArray arr = obj.getJSONArray("allStuffs");
 
+                    stuffs = new String[arr.length()];
+
                     for (int i=count; i<arr.length(); i++) {
+                        stuffs[i] = arr.getString(i);
                         JSONObject all = arr.getJSONObject(i);
                         final Stuff stuff = new Stuff(
                                 all.getString("id"),
@@ -143,12 +150,6 @@ public class ListActivity extends AppCompatActivity {
 
     public void chatOnClick(View v) {
         Intent intent = new Intent(ListActivity.this, ChatActivity.class);
-        intent.putExtra("UserID", userID);
-        startActivity(intent);
-    }
-
-    public void detailOnClick(View v) {
-        Intent intent = new Intent(ListActivity.this, DetailActivity.class);
         intent.putExtra("UserID", userID);
         startActivity(intent);
     }
