@@ -104,12 +104,12 @@ public class ListActivity extends AppCompatActivity {
 
         Log.d("TAG", "onCreated started ...");
 
-        Commodity com1 = new Commodity("1", "alanaudi", "1","r8", "http://google.com", "123", "sold_out", "20190618", "20190618");
+        Stuff stuff1 = new Stuff("1", "alanaudi", "1","r8", "http://google.com", "123", "sold_out", "20190618", "20190618");
 
-        ArrayList<Commodity> commodities = new ArrayList<>();
-        commodities.add(com1);
+        ArrayList<Stuff> commodities = new ArrayList<>();
+        commodities.add(stuff1);
 
-        CommodityAdapter adapter= new CommodityAdapter(this, R.layout.activity_list, commodities);
+        StuffAdapter adapter= new StuffAdapter(this, R.layout.activity_list, commodities);
         listView.setAdapter(adapter);
 
         Intent intent = this.getIntent();
