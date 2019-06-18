@@ -18,7 +18,15 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -38,6 +46,9 @@ public class ListActivity extends AppCompatActivity {
     private TextView userIDTextView;
     private ListView listView;
 
+    private String responseString;
+
+
     private String commodities[] = {
             "CONTACTS多功能真皮鑰匙包",
             "BAGMIO duet 牛皮鑰匙零錢包",
@@ -56,6 +67,29 @@ public class ListActivity extends AppCompatActivity {
             R.drawable.commodity_03,
     };
 
+
+    /* private String commodities[];
+
+    private String descriptions[];*/
+
+    private ArrayList<String> _name = new ArrayList();
+    private ArrayList<String> _description = new ArrayList();
+    private ArrayList<String> _owner = new ArrayList();
+    private ArrayList<String> _img_url = new ArrayList();
+    private ArrayList<String> _price = new ArrayList();
+    private ArrayList<String> _status = new ArrayList();
+    private ArrayList<String> _created_at = new ArrayList();
+    private ArrayList<String> _updated_at = new ArrayList();
+
+    private String name[];
+    private String description[];
+    private String owner[];
+    private String img_url[];
+    private String price[];
+    private String status[];
+    private String created_at[];
+    private String updated_at[];
+
     private String userID;
 
     @Override
@@ -73,13 +107,15 @@ public class ListActivity extends AppCompatActivity {
         listView = findViewById(R.id.listView);
 
         try {
-            postRequest(postUrl,postBody);
+            postRequest(postUrl, postBody);
             Log.d("TAG", "post successfully");
         } catch (IOException e) {
             e.printStackTrace();
         }
 
-        MyAdapter adapter = new MyAdapter(this, commodities, descriptions, images);
+
+
+        MyAdapter adapter = new MyAdapter(this, name, description);
         listView.setAdapter(adapter);
 
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -105,11 +141,56 @@ public class ListActivity extends AppCompatActivity {
             @Override
             public void onFailure(Call call, IOException e) {
                 call.cancel();
+                Log.d("ERR", e.getMessage());
             }
 
             @Override
             public void onResponse(Call call, Response response) throws IOException {
-                Log.d("TAG",response.body().string());
+                responseString = response.body().string();
+                try {
+                    JSONObject jsonObject = new JSONObject(responseString);
+
+                    JSONArray itemList = jsonObject.getJSONArray("getStuffs");
+                    for (int i = 0 ; i < itemList.length(); i++){
+                        JSONObject eachItem = itemList.getJSONObject(i);
+
+                        _name.add(eachItem.getString("name"));
+                        _description.add(eachItem.getString("description"));
+                        _owner.add(eachItem.getString("owner"));
+                        _img_url.add(eachItem.getString("img_url"));
+                        _price.add(eachItem.getString("price"));
+                        _status.add(eachItem.getString("status"));
+                        _created_at.add(eachItem.getString("created_at"));
+                        _updated_at.add(eachItem.getString("updated_at"));
+
+                        name = _name.toArray(new String[0]);
+                        description = _description.toArray(new String[0]);
+                        owner = _owner.toArray(new String[0]);
+                        img_url = _img_url.toArray(new String[0]);
+                        price = _price.toArray(new String[0]);
+                        status = _status.toArray(new String[0]);
+                        created_at = _created_at.toArray(new String[0]);
+                        updated_at = _updated_at.toArray(new String[0]);
+                    }
+                }
+                catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+
+
+                /*
+                JSONArray jsonArr = new JSONArray(responseString);
+
+                for (int i = 0; i < jsonArr.length(); i++)
+                {
+                    JSONObject jsonObj = jsonArr.getJSONObject(i);
+
+                    System.out.println(jsonObj);
+                }
+                */
+
+
             }
         });
     }
@@ -119,14 +200,14 @@ public class ListActivity extends AppCompatActivity {
         Context context;
         String comTitle[];
         String comDescription[];
-        int comImage[];
+        /*int comImage[];*/
 
-        MyAdapter (Context c, String title[], String description[], int image[]) {
+        MyAdapter (Context c, String title[], String description[]) {
             super(c, R.layout.item, R.id.textView1, title);
             this.context = c;
             this.comTitle = title;
             this.comDescription = description;
-            this.comImage = image;
+            /*this.comImage = image;*/
         }
 
         @NonNull
@@ -138,7 +219,7 @@ public class ListActivity extends AppCompatActivity {
             TextView title = item.findViewById(R.id.textView1);
             TextView description = item.findViewById(R.id.textView2);
 
-            images.setImageResource(comImage[position]);
+            /*images.setImageResource(comImage[position]);*/
             title.setText(comTitle[position]);
             description.setText(comDescription[position]);
 
