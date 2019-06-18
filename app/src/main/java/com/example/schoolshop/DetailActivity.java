@@ -165,7 +165,7 @@ public class DetailActivity extends AppCompatActivity {
 
     public void Buyer(View view) {
         postUrl = "http://merry.ee.ncku.edu.tw:10000/setStuffBuying/";
-        postBody = "{\"id\":" + itemID +"\"buyer\":" + UserID + "}";
+        postBody = "{\"id\": \"" + itemID +"\", \"buyer\": \"" + UserID + "\"}";
         try {
             postRequest(postUrl, postBody);
         } catch (IOException e) {
@@ -182,7 +182,7 @@ public class DetailActivity extends AppCompatActivity {
 
     public void soldOut(View view) {
         postUrl = "http://merry.ee.ncku.edu.tw:10000/setStuffSoldout/";
-        postBody = "{\"id\":" + itemID +"}";
+        postBody = "{\"id\": \"" + itemID +"\"}";
         try {
             postRequest(postUrl, postBody);
         } catch (IOException e) {
@@ -206,7 +206,7 @@ public class DetailActivity extends AppCompatActivity {
     public void Reject(View view) {
 
         postUrl = "http://merry.ee.ncku.edu.tw:10000/setStuffReject/";
-        postBody = "{\"id\":" + itemID +"}";
+        postBody = "{\"id\": \"" + itemID +"\"}";
         try {
             postRequest(postUrl, postBody);
         } catch (IOException e) {
@@ -262,18 +262,8 @@ public class DetailActivity extends AppCompatActivity {
 
     public void Contact(View view) {
         Intent intent = new Intent(DetailActivity.this, ChatActivity.class);
-        intent.putExtra("item", Item);
-
-        contact = findViewById(R.id.contact_button);
-        if (UserID.equals(ownerID)) { // seller
-            String message = "{\"id\": " + itemID + ",\"src\": " + UserID + ",\"dist\": " + buyerID + "}";
-            intent.putExtra("chatInfo", message);
-            startActivity(intent);
-        }
-        else { // buyer
-            String message = "{\"id\": " + itemID + ",\"src\": " + UserID + ",\"dist\": " + ownerID + "}";
-            intent.putExtra("chatInfo", message);
-            startActivity(intent);
-        }
+        intent.putExtra("UserID", UserID);
+        intent.putExtra("StuffID", itemID);
+        startActivity(intent);
     }
 }

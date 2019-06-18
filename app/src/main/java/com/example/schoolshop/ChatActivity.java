@@ -44,8 +44,8 @@ public class ChatActivity extends AppCompatActivity {
 
         Intent intent = this.getIntent();
         userID = intent.getStringExtra("UserID");
-        //stuffID = intent.getStringExtra("StuffID");
-        stuffID = "1";
+        stuffID = intent.getStringExtra("StuffID");
+//        stuffID = "1";
 
         editText = (EditText) findViewById(R.id.editText);
         messageAdapter = new MessageAdapter(this);

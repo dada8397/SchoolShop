@@ -88,7 +88,7 @@ public class ListActivity extends AppCompatActivity {
         });
     }
 
-    void postRequest(String postUrl,String postBody) throws IOException {
+    void postRequest(String postUrl, String postBody) throws IOException {
 
         OkHttpClient client = new OkHttpClient();
 
