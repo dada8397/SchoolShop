@@ -148,8 +148,9 @@ public class CreateActivity extends AppCompatActivity {
                     e.printStackTrace();
                 }
 
-                Intent intent = new Intent(CreateActivity.this, DetailActivity.class);
+                Intent intent = new Intent(CreateActivity.this, ListActivity.class);
                 intent.putExtra("ITEM", postBody);
+                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 startActivity(intent);
             }
         });
