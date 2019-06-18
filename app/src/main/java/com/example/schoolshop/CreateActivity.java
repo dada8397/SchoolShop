@@ -29,6 +29,7 @@ import android.widget.TextView;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
+import com.squareup.picasso.Picasso;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -59,9 +60,11 @@ public class CreateActivity extends AppCompatActivity {
     private ImageView image1;
     private ImageView image2;
     private Button submit;
+    private TextView id;
     private EditText item;
     private EditText price;
     private EditText description;
+    private String get_userid;
     private String get_item;
     private String get_price;
     private String get_description;
@@ -69,8 +72,8 @@ public class CreateActivity extends AppCompatActivity {
     private final int REQUEST_PICK_IMAGE = 1;
 
 
-    public String postUrl= "http://merry.ee.ncku.edu.tw:10000/createStuff/";
-    public String postBody="{\"name\": \"500G SSD\", \"owner\": \"1\", \"description\": \"9成新，用過一個月，附發票\", \"img_url\": {\"1\": \"https://i.imgur.com/3JIbb5O.jpg\", \"2\": \"https://i.imgur.com/OfGYgqk.png\"}, \"price\": \"1000\"}";
+    public String postUrl = "http://merry.ee.ncku.edu.tw:10000/createStuff/";
+    public String postBody = "{\"name\": \"500G SSD\", \"owner\": \"1\", \"description\": \"9成新，用過一個月，附發票\", \"img_url\": {\"1\": \"https://i.imgur.com/3JIbb5O.jpg\", \"2\": \"https://i.imgur.com/OfGYgqk.png\"}, \"price\": \"1000\"}";
 
     public static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
 
@@ -82,19 +85,18 @@ public class CreateActivity extends AppCompatActivity {
         Intent intent = this.getIntent();
         userID = intent.getStringExtra("UserID");
 
-        //初始化
         image1 = (ImageView) findViewById(R.id.photo1_imageView);
         image2 = (ImageView) findViewById(R.id.photo2_imageView);
         submit = (Button) findViewById(R.id.submit_button);
-
+        id = (TextView) findViewById(R.id.id_tv);
         item = (EditText) findViewById(R.id.item_editText);
         price = (EditText) findViewById(R.id.price_editText);
         description = (EditText) findViewById(R.id.description_editText);
 
+        id.setText(userID);
 
 
-
-        //擷取照片按鈕監聽器
+       /* //擷取照片按鈕監聽器
         image1.setOnClickListener(new Button.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -105,7 +107,6 @@ public class CreateActivity extends AppCompatActivity {
                 //使用Intent.ACTION_GET_CONTENT這個Action
                 intent.setAction(Intent.ACTION_GET_CONTENT);
                 //取得照片後返回此畫面
-
                 startActivityForResult(Intent.createChooser(intent, "Select Picture"), 1);
             }
         });
@@ -119,12 +120,14 @@ public class CreateActivity extends AppCompatActivity {
                 //使用Intent.ACTION_GET_CONTENT這個Action
                 intent.setAction(Intent.ACTION_GET_CONTENT);
                 //取得照片後返回此畫面
-                //onActivityResult(Intent.createChooser(intent, "Select Picture"), REQUEST_CODE);
                 startActivityForResult(Intent.createChooser(intent, "Select Picture"), 2);
             }
 
 
-        });
+        });*/
+
+        Picasso.get().load("https://i.imgur.com/3JIbb5O.jpg").into(image1);
+        Picasso.get().load("https://i.imgur.com/OfGYgqk.png").into(image2);
 
 
         submit.setOnClickListener(new Button.OnClickListener() {
@@ -132,11 +135,12 @@ public class CreateActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
+                get_userid = id.getText().toString();
                 get_item = item.getText().toString();
                 get_price = price.getText().toString();
                 get_description = description.getText().toString().replace("\n", "\\n");
 
-                postBody = "{\"name\": \"" + get_item + "\", \"owner\": \"1\", \"description\": \"" + get_description + "\", \"img_url\": {\"1\": \"https://i.imgur.com/3JIbb5O.jpg\", \"2\": \"https://i.imgur.com/OfGYgqk.png\"}, \"price\": \"" + get_price + "\"}";
+                postBody = "{\"name\": \"" + get_item + "\", \"owner\": \"" + get_userid + "\", \"description\": \"" + get_description + "\", \"img_url\": {\"1\": \"https://i.imgur.com/3JIbb5O.jpg\", \"2\": \"https://i.imgur.com/OfGYgqk.png\"}, \"price\": \"" + get_price + "\"}";
 
                 try {
                     postRequest(postUrl, postBody);
@@ -152,12 +156,10 @@ public class CreateActivity extends AppCompatActivity {
     }
 
 
-    void postRequest(String postUrl,String postBody) throws IOException {
+    void postRequest(String postUrl, String postBody) throws IOException {
 
         OkHttpClient client = new OkHttpClient();
-
         RequestBody body = RequestBody.create(postBody, JSON);
-
         Request request = new Request.Builder()
                 .url(postUrl)
                 .post(body)
@@ -177,33 +179,34 @@ public class CreateActivity extends AppCompatActivity {
         });
     }
 
-    @Override
+    /*@Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (resultCode != RESULT_OK) { return; }
+        if (resultCode != RESULT_OK) {
+            return;
+        }
 
-        switch(requestCode){
+        switch (requestCode) {
             case REQUEST_PICK_IMAGE:
                 getSelectImage(data); //處理選取圖片的程式 寫在後面
                 break;
         }
-    }
+    }*/
 
-    /*@Override
+    @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        //Log.e("456", "eeeeeeeeeeeee");
+
         super.onActivityResult(requestCode, resultCode, data);
 
         if (resultCode == RESULT_OK && data != null && data.getData() != null) {
-            //Log.e("123", "fffffffffffffffff");
+
 
             Uri uri = data.getData();
             try {
                 if (requestCode == 1) {
                     Bitmap bitmap1 = MediaStore.Images.Media.getBitmap(getContentResolver(), uri);
                     image1.setImageBitmap(bitmap1);
-                }
-                else if (requestCode == 2) {
+                } else if (requestCode == 2) {
                     Bitmap bitmap2 = MediaStore.Images.Media.getBitmap(getContentResolver(), uri);
                     image2.setImageBitmap(bitmap2);
                 }
@@ -212,17 +215,19 @@ public class CreateActivity extends AppCompatActivity {
                 e.printStackTrace();
             }
         }
-    }*/
+    }
 
-    //選擇了要插入的圖片後，在onActivityResult會執行這個
-    private void getSelectImage(Intent data){
+
+    /*private void getSelectImage(Intent data) {
         //從 onActivityResult 傳入的data中，取得圖檔路徑
         Uri selectedImage = data.getData();
-        String[] filePathColumn = { MediaStore.Images.Media.DATA };
+        String[] filePathColumn = {MediaStore.Images.Media.DATA};
 
         Cursor cursor = getContentResolver().query(selectedImage,
                 filePathColumn, null, null, null);
-        if(cursor==null){ return; }
+        if (cursor == null) {
+            return;
+        }
         cursor.moveToFirst();
 
         int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
@@ -241,10 +246,10 @@ public class CreateActivity extends AppCompatActivity {
         //Log.d("editor",imageBase64);
 
         //將圖檔上傳至 Imgur，將取得的圖檔網址插入文字輸入框
-//        imgurUpload(imageBase64); //程式寫在後面
-    }
+//      imgurUpload(imageBase64); //程式寫在後面
+    }*/
 
-    private Bitmap getResizedBitmap(String imagePath) {
+    /*private Bitmap getResizedBitmap(String imagePath) {
         final int MAX_WIDTH = 1024; // 新圖的寬要小於等於這個值
 
         BitmapFactory.Options options = new BitmapFactory.Options();
@@ -254,7 +259,7 @@ public class CreateActivity extends AppCompatActivity {
 
         // 求出要縮小的 scale 值，必需是2的次方，ex: 1,2,4,8,16...
         int scale = 1;
-        while(width > MAX_WIDTH*2){
+        while (width > MAX_WIDTH * 2) {
             width /= 2;
             height /= 2;
             scale *= 2;
@@ -266,7 +271,7 @@ public class CreateActivity extends AppCompatActivity {
         Bitmap scaledBitmap = BitmapFactory.decodeFile(imagePath, scaledOptions);
 
         float resize = 1; //縮小值 resize 可為任意小數
-        if(width>MAX_WIDTH){
+        if (width > MAX_WIDTH) {
             resize = ((float) MAX_WIDTH) / width;
         }
 
@@ -275,9 +280,9 @@ public class CreateActivity extends AppCompatActivity {
 
         // 產生縮小後的圖
         return Bitmap.createBitmap(scaledBitmap, 0, 0, width, height, matrix, true);
-    }
+    }*/
 
-    private void imgurUpload(final String image){ //插入圖片
+    /*private void imgurUpload(final String image) { //插入圖片
         String urlString = "https://imgur-apiv3.p.mashape.com/3/image/";
         String mashapeKey = "3e2d3a6799msh2933e1ccd123cb5p18a23djsn03d073e8c889"; //設定自己的 Mashape Key
         String clientId = "1035827e94db77b"; //設定自己的 Clinet ID
@@ -286,7 +291,7 @@ public class CreateActivity extends AppCompatActivity {
 
         AsyncHttpClient client = new AsyncHttpClient();
         client.addHeader("X-Mashape-Key", mashapeKey);
-        client.addHeader("Authorization", "Client-ID "+clientId);
+        client.addHeader("Authorization", "Client-ID " + clientId);
         client.addHeader("Content-Type", "application/x-www-form-urlencoded");
         RequestParams params = new RequestParams();
         params.put("title", titleString);
@@ -295,33 +300,33 @@ public class CreateActivity extends AppCompatActivity {
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                 if (!response.optBoolean("success") || !response.has("data")) {
-                    Log.d("editor", "response: "+response.toString());
+                    Log.d("editor", "response: " + response.toString());
                     return;
                 }
                 JSONObject data = response.optJSONObject("data");
                 //Log.d("editor","link: "+data.optString("link"));
-                String link = data.optString("link","");
-                int width = data.optInt("width",0);
-                int height = data.optInt("height",0);
-                String bbcode = "[img="+width+"x"+height+"]"+link+"[/img]";
+                String link = data.optString("link", "");
+                int width = data.optInt("width", 0);
+                int height = data.optInt("height", 0);
+                String bbcode = "[img=" + width + "x" + height + "]" + link + "[/img]";
                 //將文字插入輸入框的程式 寫在後面
             }
+
             @Override
             public void onFailure(int statusCode, Header[] headers, Throwable e, JSONObject error) {
 
-                Log.d("editor","error: "+error.toString());
+                Log.d("editor", "error: " + error.toString());
                 /*if (error.has("data")) {
                     JSONObject data = error.optJSONObject("data");
                     AlertDialog dialog = new AlertDialog.Builder(mContext)
                             .setTitle("Error: " + statusCode + " " + e.getMessage())
-                            .setMessage(data.optString("error",""))
+                            .setMessage(data.optString("error", ""))
                             .setPositiveButton("確定", null)
                             .create();
                     dialog.show();
-                }*/
+                }
             }
         });
-    }
 
+    }*/
 }
-
