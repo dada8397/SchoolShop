@@ -134,7 +134,7 @@ public class CreateActivity extends AppCompatActivity {
 
                 get_item = item.getText().toString();
                 get_price = price.getText().toString();
-                get_description = description.getText().toString();
+                get_description = description.getText().toString().replace("\n", "\\n");
 
                 postBody = "{\"name\": \"" + get_item + "\", \"owner\": \"1\", \"description\": \"" + get_description + "\", \"img_url\": {\"1\": \"https://i.imgur.com/3JIbb5O.jpg\", \"2\": \"https://i.imgur.com/OfGYgqk.png\"}, \"price\": \"" + get_price + "\"}";
 
@@ -166,6 +166,7 @@ public class CreateActivity extends AppCompatActivity {
         client.newCall(request).enqueue(new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
+                Log.d("here", e.getMessage());
                 call.cancel();
             }
 
@@ -240,7 +241,7 @@ public class CreateActivity extends AppCompatActivity {
         //Log.d("editor",imageBase64);
 
         //將圖檔上傳至 Imgur，將取得的圖檔網址插入文字輸入框
-        imgurUpload(imageBase64); //程式寫在後面
+//        imgurUpload(imageBase64); //程式寫在後面
     }
 
     private Bitmap getResizedBitmap(String imagePath) {
@@ -321,8 +322,6 @@ public class CreateActivity extends AppCompatActivity {
             }
         });
     }
-
-
 
 }
 
