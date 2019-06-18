@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,7 +18,22 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.IOException;
+
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
+
 public class ListActivity extends AppCompatActivity {
+
+    public String postUrl= "http://merry.ee.ncku.edu.tw:10000/getStuffs/";
+    public String postBody="{\"owner\": \"1\"}";
+
+    public static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
 
     private TextView userIDTextView;
     private ListView listView;
@@ -51,10 +67,17 @@ public class ListActivity extends AppCompatActivity {
         userID = intent.getStringExtra("UserID");
         String userIDstr = "User ID: " + userID;
 
-                userIDTextView = findViewById(R.id.textview_userid);
+        userIDTextView = findViewById(R.id.textview_userid);
         userIDTextView.setText(userIDstr);
 
         listView = findViewById(R.id.listView);
+
+        try {
+            postRequest(postUrl,postBody);
+            Log.d("TAG", "post successfully");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
         MyAdapter adapter = new MyAdapter(this, commodities, descriptions, images);
         listView.setAdapter(adapter);
@@ -62,9 +85,31 @@ public class ListActivity extends AppCompatActivity {
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                if (position == 0){Toast.makeText(ListActivity.this, "First description", Toast.LENGTH_SHORT).show(); }
-                if (position == 0){Toast.makeText(ListActivity.this, "Second description", Toast.LENGTH_SHORT).show(); }
-                if (position == 0){Toast.makeText(ListActivity.this, "Third description", Toast.LENGTH_SHORT).show(); }
+                detailOnClick(view);
+            }
+        });
+    }
+
+    void postRequest(String postUrl,String postBody) throws IOException {
+
+        OkHttpClient client = new OkHttpClient();
+
+        RequestBody body = RequestBody.create(postBody, JSON);
+
+        Request request = new Request.Builder()
+                .url(postUrl)
+                .post(body)
+                .build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                call.cancel();
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                Log.d("TAG",response.body().string());
             }
         });
     }
@@ -112,4 +157,11 @@ public class ListActivity extends AppCompatActivity {
         intent.putExtra("UserID", userID);
         startActivity(intent);
     }
+
+    public void detailOnClick(View v) {
+        Intent intent = new Intent(ListActivity.this, DetailActivity.class);
+        intent.putExtra("UserID", userID);
+        startActivity(intent);
+    }
+
 }
