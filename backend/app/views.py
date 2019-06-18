@@ -68,6 +68,8 @@ def sendMsg(request):
 
 @csrf_exempt
 def getMsgs(request):
-    chats = Chat.objects.all()
+    body = json.loads(request.body.decode('utf-8'))
+    stuff_id = body['stuff_id']
+    chats = Chat.objects.filter(stuff_id=stuff_id)
     chats = list(chats.values())
     return JsonResponse({'allMsgs': chats})

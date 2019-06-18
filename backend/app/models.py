@@ -14,5 +14,6 @@ class Stuff(models.Model):
 class Chat(models.Model):
     src = models.TextField(blank=True)
     dst = models.TextField(blank=True)
+    stuff_id = models.TextField(blank=True)
     content = models.TextField(blank=True)
     time = models.TextField(blank=True)
