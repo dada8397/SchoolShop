@@ -1,6 +1,6 @@
 package com.example.schoolshop;
 
-public class Commodity {
+public class Stuff {
     private String id;
     private String name;
     private String owner;
@@ -11,7 +11,7 @@ public class Commodity {
     private String created_at;
     private String updated_at;
 
-    public Commodity(String id,
+    public Stuff(String id,
                      String name,
                      String owner,
                      String description,

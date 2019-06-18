@@ -10,14 +10,14 @@ import android.widget.TextView;
 
 import java.util.List;
 
-public class CommodityAdapter extends ArrayAdapter<Commodity> {
+public class StuffAdapter extends ArrayAdapter<Stuff> {
 
-    private static final String TAG = "CommodityAdapter";
+    private static final String TAG = "StuffAdapter";
 
     private Context mContext;
     int mResource;
 
-    public CommodityAdapter(Context context, int resource, List<Commodity> objects){
+    public StuffAdapter(Context context, int resource, List<Stuff> objects){
         super(context, resource, objects);
         mContext = context;
         mResource = resource;
@@ -39,7 +39,7 @@ public class CommodityAdapter extends ArrayAdapter<Commodity> {
         String updated_at = getItem(position).getUpdatedAt();
 
 
-        Commodity commodity = new Commodity(id, name, owner, description, img_url, price, status, created_at, updated_at);
+        Stuff stuff = new Stuff(id, name, owner, description, img_url, price, status, created_at, updated_at);
 
         LayoutInflater inflator = LayoutInflater.from(mContext);
         item = inflator.inflate(mResource, parent, false);
