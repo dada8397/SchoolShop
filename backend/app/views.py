@@ -20,8 +20,8 @@ def createStuff(request):
 
 @csrf_exempt
 def getStuffs(request):
-    body = json.loads(request.body.decode('utf-8'))
-    stuffs = Stuff.objects.filter(owner=body['owner'])
+    # body = json.loads(request.body.decode('utf-8'))
+    stuffs = Stuff.objects.all()
     stuffs = list(stuffs.values())
     for stuff in stuffs:
         stuff['img_url'] = json.loads(stuff['img_url'])

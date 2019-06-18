@@ -1,3 +1,4 @@
+__pycache__/
 *.iml
 .gradle
 /local.properties
@@ -13,3 +14,4 @@
 .externalNativeBuild
 .idea
 db.sqlite3
+*.pyc
