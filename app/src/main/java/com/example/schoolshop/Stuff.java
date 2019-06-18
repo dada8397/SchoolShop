@@ -17,9 +17,7 @@ public class Stuff {
                      String description,
                      String img_url,
                      String price,
-                     String status,
-                     String created_at,
-                     String updated_at){
+                     String status){
 
         this.id = id;
         this.name = name;
@@ -28,8 +26,6 @@ public class Stuff {
         this.img_url = img_url;
         this.price = price;
         this.status = status;
-        this.created_at = created_at;
-        this.updated_at = updated_at;
     }
 
     public String getId() { return this.id; }
@@ -43,6 +39,4 @@ public class Stuff {
     }
     public String getPrice() { return this.price; }
     public String getStatus() { return this.status; }
-    public String getCreatedAt() { return this.created_at; }
-    public String getUpdatedAt() { return this.updated_at; }
 }
