@@ -12,6 +12,9 @@
     <string name="sold_out">已售出</string>
     <string name="selling">銷售中</string>
     <string name="buyer_button">購買</string>
+    <string name="buying_button">購買中</string>
     <string name="seller_button_sold">賣出</string>
     <string name="seller_button_reject">拒絕</string>
+    <string name="contact_seller">聯絡賣家</string>
+    <string name="contact_buyer">聯絡買家</string>
 </resources>

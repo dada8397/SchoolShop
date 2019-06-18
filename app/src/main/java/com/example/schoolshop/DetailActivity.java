@@ -31,17 +31,20 @@ public class DetailActivity extends AppCompatActivity {
     public String postUrl = null;
     public String postBody = null;
     public String UserID = null;
+    public String ownerID = null;
+    public String itemID = null;
+    public String buyerID = null;
     public String Item = null;
 
     //Json
     public static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
     public JSONObject J;
-    //public Object jsonOb;
 
     //View
     private Button buyer;
     private Button sell;
     private Button reject;
+    private Button contact;
     private TextView status;
     private TextView nameText;
     private TextView priceText;
@@ -54,33 +57,22 @@ public class DetailActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail);
 
-        //Intent intent = this.getIntent();
-        //UserID = intent.getStringExtra("UserID");
-        //Item = intent.getStringExtra("item");
-        UserID = "1";
-        Item = "{\"id\": 2, \"name\": \"aaa\",\"owner\": \"2\",\"description\": \"bbb\",\"img_url\": {\"1\":\"http://i.imgur.com/A1WNjc2.jpg\",\"2\":\"http://i.imgur.com/9kXHdt0.jpg\"},\"price\": \"100\",\"status\": \"selling\",\"created_at\": \"1560442508\",\"updated_at\": \"1560442508\"}";
+        Intent intent = this.getIntent();
+        UserID = intent.getStringExtra("UserID");
+        Item = intent.getStringExtra("item");
+        //Item = "{\"id\": 2, \"name\": \"aaa\",\"owner\": \"1\",\"buyer\": \"2\",\"description\": \"bbb\",\"img_url\": {\"1\":\"http://i.imgur.com/A1WNjc2.jpg\",\"2\":\"http://i.imgur.com/9kXHdt0.jpg\"},\"price\": \"100\",\"status\": \"buying\",\"created_at\": \"1560442508\",\"updated_at\": \"1560442508\"}";
         try {
             J = new JSONObject(Item);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        Object itemOwner = "";
-        try {
-            itemOwner = J.get("owner");
+            itemID = J.get("id").toString();
+            ownerID = J.get("owner").toString();
+            buyerID = J.get("buyer").toString();
         } catch (JSONException e) {
             e.printStackTrace();
         }
 
-        postUrl = "http://merry.ee.ncku.edu.tw:10000/getStuffs/";
-        postBody ="{\"owner\": \"1\"}";
+        changeSite(UserID, ownerID);
+        changeText();
 
-        try {
-            postRequest(postUrl, postBody);
-            changeSite(UserID, itemOwner.toString());
-            changeText();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
 
     void postRequest(String postUrl,String postBody) throws IOException {
@@ -113,71 +105,82 @@ public class DetailActivity extends AppCompatActivity {
         reject = findViewById(R.id.reject_button);
         status = findViewById(R.id.status_textview);
         buyer = findViewById(R.id.buyer_button);
+        contact = findViewById(R.id.contact_button);
+        String itemStatus = "";
+        try {
+            itemStatus = J.get("status").toString();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
         if (UserID.equals(owner)) {
-            Object itemStatus = null;
-            try {
-                itemStatus = J.get("status");
-            } catch (JSONException e) {
-                e.printStackTrace();
+            switch (itemStatus) {
+                case "selling":
+                    sell.setVisibility(View.INVISIBLE);
+                    reject.setVisibility(View.INVISIBLE);
+                    status.setVisibility(View.VISIBLE);
+                    status.setText(R.string.selling);
+                    buyer.setVisibility(View.INVISIBLE);
+                    contact.setVisibility(View.INVISIBLE);
+                    break;
+                case "buying":
+                    sell.setVisibility(View.VISIBLE);
+                    reject.setVisibility(View.VISIBLE);
+                    status.setVisibility(View.INVISIBLE);
+                    buyer.setVisibility(View.INVISIBLE);
+                    contact.setVisibility(View.VISIBLE);
+                    break;
+                case "soldout":
+                    sell.setVisibility(View.INVISIBLE);
+                    reject.setVisibility(View.INVISIBLE);
+                    status.setVisibility(View.VISIBLE);
+                    buyer.setVisibility(View.INVISIBLE);
+                    status.setText(R.string.sold_out);
+                    contact.setVisibility(View.INVISIBLE);
+                    break;
             }
-            assert itemStatus != null;
-            if (itemStatus.equals("selling")) {
-                sell.setVisibility(View.INVISIBLE);
-                reject.setVisibility(View.INVISIBLE);
-                status.setVisibility(View.VISIBLE);
-                status.setText(R.string.selling);
-                buyer.setVisibility(View.INVISIBLE);
-            }
-            else if (itemStatus.equals("buying")) {
-                sell.setVisibility(View.VISIBLE);
-                reject.setVisibility(View.VISIBLE);
-                status.setVisibility(View.INVISIBLE);
-                buyer.setVisibility(View.INVISIBLE);
-            }
-            else if (itemStatus.equals("soldout")) {
-                sell.setVisibility(View.INVISIBLE);
-                reject.setVisibility(View.INVISIBLE);
-                status.setVisibility(View.VISIBLE);
-                buyer.setVisibility(View.INVISIBLE);
-                status.setText(R.string.sold_out);
-            }
+            contact.setText(R.string.contact_buyer);
         }
         else {
             sell.setVisibility(View.INVISIBLE);
             reject.setVisibility(View.INVISIBLE);
             status.setVisibility(View.INVISIBLE);
             buyer.setVisibility(View.VISIBLE);
+            contact.setVisibility(View.VISIBLE);
+            contact.setText(R.string.contact_seller);
+            if (itemStatus.equals("selling")) {
+                buyer.setText(R.string.buyer_button);
+                contact.setEnabled(false);
+            }
+            else if (itemStatus.equals("buying")) {
+                buyer.setText(R.string.buying_button);
+                buyer.setEnabled(false);
+                contact.setEnabled(true);
+            }
+            else {
+                buyer.setText(R.string.buying_button);
+                contact.setEnabled(true);
+            }
         }
     }
 
     public void Buyer(View view) {
-        Object itemID = null;
-        try {
-            itemID = J.get("id");
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        /*postUrl = "http://merry.ee.ncku.edu.tw:10000/setStuffBuying/";
-        postBody = "{\"id\":" + itemID +"}";
+        postUrl = "http://merry.ee.ncku.edu.tw:10000/setStuffBuying/";
+        postBody = "{\"id\":" + itemID +"\"buyer\":" + UserID + "}";
         try {
             postRequest(postUrl, postBody);
         } catch (IOException e) {
             e.printStackTrace();
-        }*/
+        }
 
-        Intent intent = new Intent(DetailActivity.this, ChatActivity.class);
-        intent.putExtra("item", Item);
-        intent.putExtra("buyer", UserID);
-        startActivity(intent);
+        buyer = findViewById(R.id.buyer_button);
+        contact = findViewById(R.id.contact_button);
+        buyer.setText(R.string.buying_button);
+        buyer.setEnabled(false);
+        contact.setEnabled(true);
+
     }
 
     public void soldOut(View view) {
-        Object itemID = null;
-        try {
-            itemID = J.get("id");
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
         postUrl = "http://merry.ee.ncku.edu.tw:10000/setStuffSoldout/";
         postBody = "{\"id\":" + itemID +"}";
         try {
@@ -185,15 +188,23 @@ public class DetailActivity extends AppCompatActivity {
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+        sell = findViewById(R.id.sell_button);
+        reject = findViewById(R.id.reject_button);
+        status = findViewById(R.id.status_textview);
+        buyer = findViewById(R.id.buyer_button);
+        contact = findViewById(R.id.contact_button);
+
+        sell.setVisibility(View.INVISIBLE);
+        reject.setVisibility(View.INVISIBLE);
+        status.setVisibility(View.VISIBLE);
+        buyer.setVisibility(View.INVISIBLE);
+        status.setText(R.string.sold_out);
+        contact.setVisibility(View.INVISIBLE);
     }
 
     public void Reject(View view) {
-        Object itemID = null;
-        try {
-            itemID = J.get("id");
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
+
         postUrl = "http://merry.ee.ncku.edu.tw:10000/setStuffReject/";
         postBody = "{\"id\":" + itemID +"}";
         try {
@@ -201,6 +212,19 @@ public class DetailActivity extends AppCompatActivity {
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+        sell = findViewById(R.id.sell_button);
+        reject = findViewById(R.id.reject_button);
+        status = findViewById(R.id.status_textview);
+        buyer = findViewById(R.id.buyer_button);
+        contact = findViewById(R.id.contact_button);
+
+        sell.setVisibility(View.INVISIBLE);
+        reject.setVisibility(View.INVISIBLE);
+        status.setVisibility(View.VISIBLE);
+        status.setText(R.string.selling);
+        buyer.setVisibility(View.INVISIBLE);
+        contact.setVisibility(View.INVISIBLE);
     }
 
     void changeText() {
@@ -236,4 +260,20 @@ public class DetailActivity extends AppCompatActivity {
         Picasso.get().load(itemPhoto2.toString()).into(image2);
     }
 
+    public void Contact(View view) {
+        Intent intent = new Intent(DetailActivity.this, ChatActivity.class);
+        intent.putExtra("item", Item);
+
+        contact = findViewById(R.id.contact_button);
+        if (UserID.equals(ownerID)) { // seller
+            String message = "{\"id\": " + itemID + ",\"src\": " + UserID + ",\"dist\": " + buyerID + "}";
+            intent.putExtra("chatInfo", message);
+            startActivity(intent);
+        }
+        else { // buyer
+            String message = "{\"id\": " + itemID + ",\"src\": " + UserID + ",\"dist\": " + ownerID + "}";
+            intent.putExtra("chatInfo", message);
+            startActivity(intent);
+        }
+    }
 }
