@@ -33,7 +33,7 @@ public class ChatActivity extends AppCompatActivity {
     private MessageAdapter messageAdapter;
     private ListView messagesView;
     private String userID;
-    private String stuffID;
+    private String itemID;
     private final Handler handler = new Handler();
     private int count = 0;
 
@@ -44,8 +44,7 @@ public class ChatActivity extends AppCompatActivity {
 
         Intent intent = this.getIntent();
         userID = intent.getStringExtra("UserID");
-        //stuffID = intent.getStringExtra("StuffID");
-        stuffID = "1";
+        itemID = intent.getStringExtra("itemID");
 
         editText = (EditText) findViewById(R.id.editText);
         messageAdapter = new MessageAdapter(this);
@@ -97,7 +96,7 @@ public class ChatActivity extends AppCompatActivity {
         String postBody =
                 "{\"src\": \"" + src + "\"," +
                         "\"dst\": \"" + dst + "\"," +
-                        "\"stuff_id\": \"" + stuffID + "\"," +
+                        "\"stuff_id\": \"" + itemID + "\"," +
                         "\"content\": \"" + msg + "\"}" ;
 
         try {
@@ -160,7 +159,7 @@ public class ChatActivity extends AppCompatActivity {
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                if (id.equals(stuffID)){
+                                if (id.equals(itemID)){
                                     messageAdapter.add(message);
                                     messagesView.setSelection(messagesView.getCount()-1);
                                 }
