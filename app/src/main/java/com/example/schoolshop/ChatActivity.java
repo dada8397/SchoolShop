@@ -2,6 +2,7 @@ package com.example.schoolshop;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -26,16 +27,14 @@ public class ChatActivity extends AppCompatActivity {
 
     public String postUrl= "http://merry.ee.ncku.edu.tw:10000/sendMsg/";
     public String getUrl= "http://merry.ee.ncku.edu.tw:10000/getMsgs/";
-    public String postBody=
-            "{\"src\": \"1\"," +
-            "\"dst\": \"2\"," +
-            "\"content\": \"你好\"}";
 
     public static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
     private EditText editText;
     private MessageAdapter messageAdapter;
     private ListView messagesView;
     private String userID;
+    private final Handler handler = new Handler();
+    private int count = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,26 +51,51 @@ public class ChatActivity extends AppCompatActivity {
 
         try {
             getRequest(getUrl);
-            //postRequest(postUrl,postBody);
         } catch (IOException e) {
             e.printStackTrace();
         }
 
     }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+        handler.removeCallbacks(runnable);
+        handler.post(runnable);
+
+    }
+
+    private Runnable runnable = new Runnable() {
+        @Override
+        public void run() {
+            try{
+                getRequest(getUrl);
+            } catch (Exception e){
+            }
+            handler.postDelayed(this, 1000);
+        }
+    };
+
     public void chatOnClick(View view) {
         EditText message = (EditText)findViewById(R.id.editText);
 
         String msg = message.getText().toString();
-
+        String src;
+        String dst;
+        if (userID.equals("1")) {
+            src = "1";
+            dst = "2";
+        } else {
+            src = "2";
+            dst = "1";
+        }
         String postBody =
-                "{\"src\": \"1\"," +
-                        "\"dst\": \"2\"," +
+                "{\"src\": \"" + src + "\"," +
+                        "\"dst\": \"" + dst + "\"," +
                         "\"content\": \"" + msg + "\"}";
 
         try {
             postRequest(postUrl, postBody);
-            getRequest(getUrl);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -123,9 +147,9 @@ public class ChatActivity extends AppCompatActivity {
                     JSONObject obj = new JSONObject(json);
                     JSONArray arr = obj.getJSONArray("allMsgs");
 
-                    for (int i=0; i<arr.length(); i++) {
+                    for (int i=count; i<arr.length(); i++) {
                         JSONObject all = arr.getJSONObject(i);
-                        final Message message = new Message(all.getString("content"), all.getString("src").equals("1"));
+                        final Message message = new Message(all.getString("content"), all.getString("src").equals(userID));
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
@@ -134,10 +158,10 @@ public class ChatActivity extends AppCompatActivity {
                             }
                         });
                     }
+                    count = arr.length();
                 } catch (JSONException e) {
                     throw new RuntimeException(e);
                 }
-
             }
         });
     }
