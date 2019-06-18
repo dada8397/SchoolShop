@@ -2,6 +2,7 @@ package com.example.schoolshop;
 
 import android.content.Context;
 import android.content.Intent;
+import android.nfc.Tag;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -46,9 +47,11 @@ public class ListActivity extends AppCompatActivity {
     private TextView userIDTextView;
     private ListView listView;
 
+    private String userID;
+
     private String responseString;
 
-
+    /*
     private String commodities[] = {
             "CONTACTS多功能真皮鑰匙包",
             "BAGMIO duet 牛皮鑰匙零錢包",
@@ -71,7 +74,7 @@ public class ListActivity extends AppCompatActivity {
     /* private String commodities[];
 
     private String descriptions[];*/
-
+    /*
     private ArrayList<String> _name = new ArrayList();
     private ArrayList<String> _description = new ArrayList();
     private ArrayList<String> _owner = new ArrayList();
@@ -89,13 +92,25 @@ public class ListActivity extends AppCompatActivity {
     private String status[];
     private String created_at[];
     private String updated_at[];
+    */
 
-    private String userID;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_list);
+
+        listView = findViewById(R.id.listView);
+
+        Log.d("TAG", "onCreated started ...");
+
+        Commodity com1 = new Commodity("1", "alanaudi", "1","r8", "http://google.com", "123", "sold_out", "20190618", "20190618");
+
+        ArrayList<Commodity> commodities = new ArrayList<>();
+        commodities.add(com1);
+
+        CommodityAdapter adapter= new CommodityAdapter(this, R.layout.activity_list, commodities);
+        listView.setAdapter(adapter);
 
         Intent intent = this.getIntent();
         userID = intent.getStringExtra("UserID");
@@ -103,20 +118,6 @@ public class ListActivity extends AppCompatActivity {
 
         userIDTextView = findViewById(R.id.textview_userid);
         userIDTextView.setText(userIDstr);
-
-        listView = findViewById(R.id.listView);
-
-        try {
-            postRequest(postUrl, postBody);
-            Log.d("TAG", "post successfully");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-
-
-        MyAdapter adapter = new MyAdapter(this, name, description);
-        listView.setAdapter(adapter);
 
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -126,88 +127,21 @@ public class ListActivity extends AppCompatActivity {
         });
     }
 
-    void postRequest(String postUrl,String postBody) throws IOException {
-
-        OkHttpClient client = new OkHttpClient();
-
-        RequestBody body = RequestBody.create(postBody, JSON);
-
-        Request request = new Request.Builder()
-                .url(postUrl)
-                .post(body)
-                .build();
-
-        client.newCall(request).enqueue(new Callback() {
-            @Override
-            public void onFailure(Call call, IOException e) {
-                call.cancel();
-                Log.d("ERR", e.getMessage());
-            }
-
-            @Override
-            public void onResponse(Call call, Response response) throws IOException {
-                responseString = response.body().string();
-                try {
-                    JSONObject jsonObject = new JSONObject(responseString);
-
-                    JSONArray itemList = jsonObject.getJSONArray("getStuffs");
-                    for (int i = 0 ; i < itemList.length(); i++){
-                        JSONObject eachItem = itemList.getJSONObject(i);
-
-                        _name.add(eachItem.getString("name"));
-                        _description.add(eachItem.getString("description"));
-                        _owner.add(eachItem.getString("owner"));
-                        _img_url.add(eachItem.getString("img_url"));
-                        _price.add(eachItem.getString("price"));
-                        _status.add(eachItem.getString("status"));
-                        _created_at.add(eachItem.getString("created_at"));
-                        _updated_at.add(eachItem.getString("updated_at"));
-
-                        name = _name.toArray(new String[0]);
-                        description = _description.toArray(new String[0]);
-                        owner = _owner.toArray(new String[0]);
-                        img_url = _img_url.toArray(new String[0]);
-                        price = _price.toArray(new String[0]);
-                        status = _status.toArray(new String[0]);
-                        created_at = _created_at.toArray(new String[0]);
-                        updated_at = _updated_at.toArray(new String[0]);
-                    }
-                }
-                catch (JSONException e) {
-                    e.printStackTrace();
-                }
 
 
-
-                /*
-                JSONArray jsonArr = new JSONArray(responseString);
-
-                for (int i = 0; i < jsonArr.length(); i++)
-                {
-                    JSONObject jsonObj = jsonArr.getJSONObject(i);
-
-                    System.out.println(jsonObj);
-                }
-                */
-
-
-            }
-        });
-    }
-
-    class MyAdapter extends ArrayAdapter<String> {
+    /*class MyAdapter extends ArrayAdapter<String> {
 
         Context context;
         String comTitle[];
         String comDescription[];
-        /*int comImage[];*/
+        /*int comImage[];
 
         MyAdapter (Context c, String title[], String description[]) {
             super(c, R.layout.item, R.id.textView1, title);
             this.context = c;
             this.comTitle = title;
             this.comDescription = description;
-            /*this.comImage = image;*/
+            this.comImage = image;
         }
 
         @NonNull
@@ -219,13 +153,14 @@ public class ListActivity extends AppCompatActivity {
             TextView title = item.findViewById(R.id.textView1);
             TextView description = item.findViewById(R.id.textView2);
 
-            /*images.setImageResource(comImage[position]);*/
+            /*images.setImageResource(comImage[position]);
             title.setText(comTitle[position]);
             description.setText(comDescription[position]);
 
             return item;
         }
-    }
+    }*/
+
 
     public void createOnClick(View v) {
         Intent intent = new Intent(ListActivity.this, CreateActivity.class);
