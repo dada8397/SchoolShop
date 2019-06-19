@@ -1,8 +1,27 @@
 # SchoolShop
 
-A final project for AAD course...
+* 專為大專院校打造的...蝦皮 / PCHome / 奇摩拍賣 / 淘寶
+* 同校、跨校間的交易分開
+* 不處理金流，一切交易買賣雙方負責
+* 伺服器留下對話記錄，協助提供紀錄處理糾紛，交易有保障
+* 還有很多 feature...正在想 XD
 
 You can download our apk in [here](https://github.com/dada8397/SchoolShop/releases)
+
+## Library & Tool
+
+* Django for backend
+* Sqlite3 for database
+* OkHttp for api request and response
+* Picasso for load image
+
+## Contributions of each team member
+
+* 詹欣達（N26060258）20%：後端與商品列表
+* 謝姍倪（N26070279）20%：刊登商品頁面
+* 張維倫（N26061597）20%：商品列表
+* 王康霖（N26077124）20%：商品詳細頁面
+* 沈柏妤（N26070130）20%：聊天頁面
 
 ## Developer guideline
 
